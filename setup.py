@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 META_DATA = dict(
     name="loozr-near-sdk",
-    version="0.1.0",
+    version="0.0.1",
     license="MIT",
 
     author="Loozr Inc",
