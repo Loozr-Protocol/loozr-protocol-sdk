@@ -21,7 +21,6 @@ META_DATA = dict(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        "python-decouple",
         "near-api-py @ git+https://github.com/near/near-api-py"]
 )
 
