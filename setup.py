@@ -20,8 +20,7 @@ META_DATA = dict(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=[
-        "near-api-py @ git+https://github.com/near/near-api-py"]
+    install_requires=["lzr-near-api-py"]
 )
 
 if __name__ == "__main__":
