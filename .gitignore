@@ -1,8 +1,9 @@
 .env
 .tox
-loozr_near_sdk.egg-info
+loozr_sdk.egg-info
 __pycache__
 .vscode
+.idea
 build/
 *.py[cod]
 .DS_Store

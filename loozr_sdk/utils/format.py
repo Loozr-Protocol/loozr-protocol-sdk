@@ -1,8 +1,11 @@
+from typing import Union
 
-from loozr_near_sdk.utils.constants import BASE_TEN, DEFAULT_TOKEN_DECIMAL
+from loozr_sdk.utils.account import LZR_MIXER_ACCOUNT_ID, \
+    LZR_FACTORY_MIXER_ACCOUNT_ID
+from loozr_sdk.utils.constants import BASE_TEN, DEFAULT_TOKEN_DECIMAL
 
 
-def getExpandedNotation(flt):
+def get_expanded_notation(flt):
     str_vals = str(flt).split('e')
     if len(str_vals) > 1:
         coef = float(str_vals[0])
@@ -24,8 +27,10 @@ def getExpandedNotation(flt):
         return flt
 
 
-def getBalanceAmount(amount) -> int:
-    '''
+def balance_format(
+        amount: Union[str, int],
+        decimal=DEFAULT_TOKEN_DECIMAL) -> Union[float, int]:
+    """
     Converts account balance from an internal
     indivisible unit to NEAR or any value depending
     on the value passed to as an argument to `decimal`
@@ -36,14 +41,21 @@ def getBalanceAmount(amount) -> int:
         balance amount to be converted
     decimal: int
         token decimal places
-
     Returns
     -------
     int
         The amount of balance
-    '''
-    return amount / pow(BASE_TEN, DEFAULT_TOKEN_DECIMAL)
+    """
+    return int(amount) / pow(BASE_TEN, decimal)
 
 
-def nearFormat(amount) -> int:
+def yocto_format(amount: Union[float, int]) -> int:
     return amount * pow(BASE_TEN, DEFAULT_TOKEN_DECIMAL)
+
+
+def get_account_id_from_name(account_name):
+    return "%s.%s" % (account_name, LZR_MIXER_ACCOUNT_ID)
+
+
+def get_creator_account_id_from_name(account_name):
+    return "%s.%s" % (account_name, LZR_FACTORY_MIXER_ACCOUNT_ID)

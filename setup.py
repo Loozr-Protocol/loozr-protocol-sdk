@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 META_DATA = dict(
-    name="loozr-near-sdk",
-    version="0.0.1",
+    name="loozr-sdk",
+    version="1.0.0",
     license="MIT",
 
     author="Loozr Inc",
