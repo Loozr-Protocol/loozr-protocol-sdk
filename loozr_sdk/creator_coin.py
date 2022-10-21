@@ -9,7 +9,7 @@ from loozr_sdk.utils.constants import (
     CONTRACT_ATTACHED_GAS, CONTRACT_INITIAL_BALANCE, RESERVE_RATIO, SLOPE,
     CONTRACT_PNG_DATA)
 from loozr_sdk.utils.exceptions import InsufficientFundsError
-from loozr_sdk.utils.format import balance_format, yocto_format
+from loozr_sdk.utils.format import balance_format, format_base64, yocto_format
 
 
 def create_coin(coin_name: str,
@@ -83,7 +83,7 @@ class CreatorCoinRouter(CoinRouterClient):
         # x = current_supply
         # r = RESERVE_RATIO
         result = current_supply * (
-                pow(1 + (buy_amount / reserve_balance), RESERVE_RATIO) - 1)
+            pow(1 + (buy_amount / reserve_balance), RESERVE_RATIO) - 1)
         return yocto_format(result)
 
     def calc_purchase_return(
@@ -133,8 +133,8 @@ class CreatorCoinRouter(CoinRouterClient):
         # x = current_supply
         # r = RESERVE_RATIO
         result = reserve_balance * (
-                1 - pow((1 - (coin_to_sell / current_supply)),
-                        (1 / RESERVE_RATIO)))
+            1 - pow((1 - (float(coin_to_sell) / float(current_supply))),
+                    (1 / RESERVE_RATIO)))
         return yocto_format(result)
 
     def buy_token(self, account: Account, amount: int, founder_id: str,
@@ -156,7 +156,7 @@ class CreatorCoinRouter(CoinRouterClient):
         method = 'ft_mint'
         args = {"account_id": account.account_id, "amount": str(amount),
                 "founder_id": founder_id,
-                "founder_percent": str(founder_percent)}
+                "founder_percent_bps": str(founder_percent)}
 
         transfer_done = False
 
@@ -169,8 +169,8 @@ class CreatorCoinRouter(CoinRouterClient):
         transfer_done = True
         try:
             res = self.account.function_call(
-                self.account.account_id, method, args)
-            return res
+                self.account.account_id, method, args, amount=1)
+            return format_base64(res['status']['SuccessValue'])
         except Exception as err:
             # refunding user the amount sent upon failure after transfer is
             # successful
@@ -195,14 +195,13 @@ class CreatorCoinRouter(CoinRouterClient):
         -------
         """
         method = 'ft_burn'
-        amount_to_burn = self.calc_sale_return(amount)
         args = {"account_id": account_id, "sell_amount": str(
-            amount), "return_value": amount_to_burn}
+            amount)}
         if self.balance_of(account_id) < amount:
             raise InsufficientFundsError('Coin in balance not enough to sell.')
         res = self.account.function_call(
             self.account.account_id, method, args, amount=1)
-        return res
+        return format_base64(res['status']['SuccessValue'])
 
     def reserve_balance(self):
         method = 'reserve_balance'
@@ -211,7 +210,7 @@ class CreatorCoinRouter(CoinRouterClient):
         res = self.account.provider.view_call(
             self.account.account_id, method, args)
         balance = json.loads("".join(map(chr, res['result'])))
-        return balance
+        return int(balance)
 
     def total_supply(self):
         method = 'ft_total_supply'
@@ -220,7 +219,7 @@ class CreatorCoinRouter(CoinRouterClient):
         res = self.account.provider.view_call(
             self.account.account_id, method, args)
         total_supply = json.loads("".join(map(chr, res['result'])))
-        return total_supply
+        return int(total_supply)
 
     def balance_of(self, account_id: str):
         method = 'ft_balance_of'
@@ -229,4 +228,4 @@ class CreatorCoinRouter(CoinRouterClient):
         res = self.account.provider.view_call(
             self.account.account_id, method, args)
         balance = json.loads("".join(map(chr, res['result'])))
-        return balance
+        return int(balance)

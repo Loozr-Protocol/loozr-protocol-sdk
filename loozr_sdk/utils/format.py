@@ -1,3 +1,5 @@
+import base64
+import json
 from typing import Union
 
 from loozr_sdk.utils.account import LZR_MIXER_ACCOUNT_ID, \
@@ -59,3 +61,10 @@ def get_account_id_from_name(account_name):
 
 def get_creator_account_id_from_name(account_name):
     return "%s.%s" % (account_name, LZR_FACTORY_MIXER_ACCOUNT_ID)
+
+
+def format_base64(base64_str: str):
+    base64_bytes = base64_str.encode('ascii')
+    message_bytes = base64.b64decode(base64_bytes)
+    message = message_bytes.decode('ascii')
+    return json.loads(message)
